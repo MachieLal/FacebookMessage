@@ -14,9 +14,13 @@
 		824334BD1D994E270072F751 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 824334BB1D994E270072F751 /* Main.storyboard */; };
 		824334BF1D994E270072F751 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 824334BE1D994E270072F751 /* Assets.xcassets */; };
 		824334C21D994E270072F751 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 824334C01D994E270072F751 /* LaunchScreen.storyboard */; };
+		E1A216D5315394E4BBD718EC /* Pods_FacebookMessage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DA0C2986E78C5549BC8F8C4 /* Pods_FacebookMessage.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		11C03666147EEE21073C84DD /* Pods-FacebookMessage.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FacebookMessage.release.xcconfig"; path = "Pods/Target Support Files/Pods-FacebookMessage/Pods-FacebookMessage.release.xcconfig"; sourceTree = "<group>"; };
+		2560F200E32A07264CAF4B4D /* Pods-FacebookMessage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FacebookMessage.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FacebookMessage/Pods-FacebookMessage.debug.xcconfig"; sourceTree = "<group>"; };
+		4DA0C2986E78C5549BC8F8C4 /* Pods_FacebookMessage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FacebookMessage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		824334AF1D994E260072F751 /* FacebookMessage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FacebookMessage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		824334B21D994E270072F751 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		824334B51D994E270072F751 /* FacebookMessage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacebookMessage.xcdatamodel; sourceTree = "<group>"; };
@@ -33,17 +37,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E1A216D5315394E4BBD718EC /* Pods_FacebookMessage.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7C7B9926035E8096AAECE03E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4DA0C2986E78C5549BC8F8C4 /* Pods_FacebookMessage.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		80DBBDAF664AB442D6D1BF66 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2560F200E32A07264CAF4B4D /* Pods-FacebookMessage.debug.xcconfig */,
+				11C03666147EEE21073C84DD /* Pods-FacebookMessage.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		824334A61D994E260072F751 = {
 			isa = PBXGroup;
 			children = (
 				824334B11D994E260072F751 /* FacebookMessage */,
 				824334B01D994E260072F751 /* Products */,
+				80DBBDAF664AB442D6D1BF66 /* Pods */,
+				7C7B9926035E8096AAECE03E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -77,9 +101,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 824334C61D994E270072F751 /* Build configuration list for PBXNativeTarget "FacebookMessage" */;
 			buildPhases = (
+				4F338A63551C5980E52AF88E /* [CP] Check Pods Manifest.lock */,
 				824334AB1D994E260072F751 /* Sources */,
 				824334AC1D994E260072F751 /* Frameworks */,
 				824334AD1D994E260072F751 /* Resources */,
+				1B41941C78822801C4D5ADE2 /* [CP] Embed Pods Frameworks */,
+				2A4E62A7A0221823BD638EEC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -135,6 +162,54 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1B41941C78822801C4D5ADE2 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FacebookMessage/Pods-FacebookMessage-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2A4E62A7A0221823BD638EEC /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FacebookMessage/Pods-FacebookMessage-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4F338A63551C5980E52AF88E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		824334AB1D994E260072F751 /* Sources */ = {
@@ -257,6 +332,7 @@
 		};
 		824334C71D994E270072F751 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2560F200E32A07264CAF4B4D /* Pods-FacebookMessage.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = FacebookMessage/Info.plist;
@@ -268,6 +344,7 @@
 		};
 		824334C81D994E270072F751 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 11C03666147EEE21073C84DD /* Pods-FacebookMessage.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = FacebookMessage/Info.plist;
@@ -296,6 +373,7 @@
 				824334C81D994E270072F751 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
