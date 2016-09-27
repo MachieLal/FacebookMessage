@@ -1,0 +1,29 @@
+{
+    "contacts": [
+                 {
+                 "name": "A1",
+                 "activeTime": "2013-01-15",
+                 "isOnline": "1",
+                 },
+                 {
+                 "name": "A2",
+                 "activeTime": "2013-01-15",
+                 "isOnline": "0",
+                 },
+                 {
+                 "name": "A3",
+                 "activeTime": "2013-01-15",
+                 "isOnline": "0",
+                 },
+                 {
+                 "name": "A4",
+                 "activeTime": "2013-01-15",
+                 "isOnline": "0",
+                 },
+                 {
+                 "name": "A5",
+                 "activeTime": "2013-01-15",
+                 "isOnline": "1",
+                 }
+    ]
+}

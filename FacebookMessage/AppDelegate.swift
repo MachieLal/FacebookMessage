@@ -135,7 +135,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     lazy var managedObjectModel: NSManagedObjectModel = {
         
-        let modelURL = NSBundle.mainBundle().URLForResource("HitMe", withExtension: "momd")!
+        let modelURL = NSBundle.mainBundle().URLForResource("FacebookMessage", withExtension: "momd")!
         return NSManagedObjectModel(contentsOfURL: modelURL)!
     }()
     
