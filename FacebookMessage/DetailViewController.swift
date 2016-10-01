@@ -15,14 +15,15 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
     var conversation: Conversation?
     var incomingBubble: JSQMessagesBubbleImage!
     var outgoingBubble: JSQMessagesBubbleImage!
-    var detailItem: AnyObject? = nil
+    var userDetails: AnyObject? = nil
     private var displayName: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
         // Setup navigation
-        setupBackButton()
+//        setupBackButton()
 
         /**
          *  Override point:
@@ -77,13 +78,6 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
     
     func receiveMessagePressed(sender: UIBarButtonItem) {
         /**
-         *  DEMO ONLY
-         *
-         *  The following is simply to simulate received messages for the demo.
-         *  Do not actually do this.
-         */
-        
-        /**
          *  Show the typing indicator to be shown
          */
         self.showTypingIndicator = !self.showTypingIndicator
@@ -98,8 +92,11 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
          */
         var copyMessage = self.messages.last?.copy()
         
+        let contactAvatarID = userDetails!.valueForKey("avatarID") as? String
+        let contactDisplayName = userDetails!.valueForKey("displayName") as? String
+
         if (copyMessage == nil) {
-            copyMessage = JSQMessage(senderId: AvatarIdJobs, displayName: getName(User.Jobs), text: "First received!")
+            copyMessage = JSQMessage(senderId: contactAvatarID!, displayName: contactDisplayName!, text: "First received!")
         }
         
         var newMessage:JSQMessage!
@@ -164,14 +161,14 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
                 assertionFailure("Error: This Media type was not recognised")
             }
             
-            newMessage = JSQMessage(senderId: AvatarIdJobs, displayName: getName(User.Jobs), media: newMediaData)
+            newMessage = JSQMessage(senderId: contactAvatarID!, displayName: contactDisplayName!, media: newMediaData)
         }
         else {
             /**
              *  Last message was a text message
              */
             
-            newMessage = JSQMessage(senderId: AvatarIdJobs, displayName: getName(User.Jobs), text: copyMessage!.text)
+            newMessage = JSQMessage(senderId: contactAvatarID!, displayName: contactDisplayName!, text: copyMessage!.text)
         }
         
         /**
@@ -184,7 +181,10 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
         
         self.messages.append(newMessage)
         self.finishReceivingMessageAnimated(true)
-        
+        if (self.automaticallyScrollsToMostRecentMessage) {
+            self.scrollToBottomAnimated(true)
+        }
+
         if newMessage.isMediaMessage {
             /**
              *  Simulate "downloading" media
@@ -233,102 +233,75 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
         let message = JSQMessage(senderId: senderId, senderDisplayName: senderDisplayName, date: date, text: text)
         self.messages.append(message)
         self.finishSendingMessageAnimated(true)
-    }
-    
-    override func didPressAccessoryButton(sender: UIButton)
-    {
-        self.inputToolbar.contentView!.textView!.resignFirstResponder()
-//        self.performSegueWithIdentifier("showSmileyCollection", sender: sender)
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let pvc = storyboard.instantiateViewControllerWithIdentifier("Smiley Collection View Controller") as! SmileyCollectionViewController
-        
-//        Load Images
-        for i in 1...50
-        {
-            let image = UIImage.init(named: "\(i).jpg")
-            pvc.images.addObject(image!)
-        }
-        
-        pvc.modalPresentationStyle = UIModalPresentationStyle.Custom
-        pvc.transitioningDelegate = self
-        pvc.view.backgroundColor = UIColor.redColor()
-        pvc.detailViewController = self
-        self.presentViewController(pvc, animated: true, completion: nil)
-
         if (self.automaticallyScrollsToMostRecentMessage) {
             self.scrollToBottomAnimated(true)
         }
     }
     
+    override func didPressAccessoryButton(sender: UIButton)
+    {
+        self.inputToolbar.contentView!.textView!.resignFirstResponder()
+        
+        let sheet = UIAlertController(title: "Media messages", message: nil, preferredStyle: .ActionSheet)
+
+        let photoAction = UIAlertAction(title: "Send photo/ smiley", style: .Default) { (action) in
+            /**
+             *  Create UIImagePicker to send photo
+             */
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let pvc = storyboard.instantiateViewControllerWithIdentifier("Smiley Collection View Controller") as! SmileyCollectionViewController
+            
+            //        Load Images
+            for i in 1...50
+            {
+                let image = UIImage.init(named: "\(i).jpg")
+                pvc.images.addObject(image!)
+            }
+            
+            pvc.modalPresentationStyle = UIModalPresentationStyle.Custom
+            pvc.transitioningDelegate = self
+            pvc.view.backgroundColor = UIColor.redColor()
+            pvc.detailViewController = self
+            self.presentViewController(pvc, animated: true, completion: nil)
+        }
+
+        let locationAction = UIAlertAction(title: "Send location", style: .Default) { (action) in
+
+            //  Add fake location
+            let locationItem = self.buildLocationItem()
+
+            self.addMedia(locationItem)
+        }
+
+        let videoAction = UIAlertAction(title: "Send video", style: .Default) { (action) in
+            //  Add fake video
+            let videoItem = self.buildVideoItem()
+
+            self.addMedia(videoItem)
+        }
+
+        let audioAction = UIAlertAction(title: "Send audio", style: .Default) { (action) in
+             //  Add fake audio
+            let audioItem = self.buildAudioItem()
+
+            self.addMedia(audioItem)
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        
+        sheet.addAction(photoAction)
+        sheet.addAction(locationAction)
+        sheet.addAction(videoAction)
+        sheet.addAction(audioAction)
+        sheet.addAction(cancelAction)
+        
+        self.presentViewController(sheet, animated: true, completion: nil)
+
+}
+    
     func presentationControllerForPresentedViewController(presented: UIViewController, presentingViewController presenting: UIViewController, sourceViewController source: UIViewController) -> UIPresentationController? {
         return HalfSizePresentationController(presentedViewController: presented, presentingViewController: self)
     }
-    
-    
-//    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?)
-//    {
-//        if segue.identifier == "showSmileyCollection" {
-//            let vc = segue.destinationViewController
-//            vc.view.bounds = CGRectMake(0, 0, 100, 100)
-//            vc.view.setNeedsDisplay()
-//            vc.view.layoutSubviews()
-//            vc.view.setNeedsUpdateConstraints()
-//            
-//            
-//        }
-//    }
-
-//    {
-//        self.inputToolbar.contentView!.textView!.resignFirstResponder()
-//        
-//        let sheet = UIAlertController(title: "Media messages", message: nil, preferredStyle: .ActionSheet)
-//        
-//        let photoAction = UIAlertAction(title: "Send photo", style: .Default) { (action) in
-//            /**
-//             *  Create UIImagePicker to send photo
-//             */
-////            let photoItem = JSQPhotoMediaItem(image: UIImage(named: "goldengate"))
-////            self.addMedia(photoItem)
-//            self.performSegueWithIdentifier("showSmileyCollection", sender: sheet)
-//        }
-//        
-//        let locationAction = UIAlertAction(title: "Send location", style: .Default) { (action) in
-//            /**
-//             *  Add fake location
-//             */
-//            let locationItem = self.buildLocationItem()
-//            
-//            self.addMedia(locationItem)
-//        }
-//        
-//        let videoAction = UIAlertAction(title: "Send video", style: .Default) { (action) in
-//            /**
-//             *  Add fake video
-//             */
-//            let videoItem = self.buildVideoItem()
-//            
-//            self.addMedia(videoItem)
-//        }
-//        
-//        let audioAction = UIAlertAction(title: "Send audio", style: .Default) { (action) in
-//            /**
-//             *  Add fake audio
-//             */
-//            let audioItem = self.buildAudioItem()
-//            
-//            self.addMedia(audioItem)
-//        }
-//        
-//        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
-//        
-//        sheet.addAction(photoAction)
-//        sheet.addAction(locationAction)
-//        sheet.addAction(videoAction)
-//        sheet.addAction(audioAction)
-//        sheet.addAction(cancelAction)
-//        
-//        self.presentViewController(sheet, animated: true, completion: nil)
-//    }
     
     func buildVideoItem() -> JSQVideoMediaItem {
         let videoURL = NSURL(fileURLWithPath: "file://")
@@ -361,21 +334,22 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
     func addMedia(media:JSQMediaItem) {
         let message = JSQMessage(senderId: self.senderId(), displayName: self.senderDisplayName(), media: media)
         self.messages.append(message)
-        
-        //Optional: play sent sound
-        
         self.finishSendingMessageAnimated(true)
+        if (self.automaticallyScrollsToMostRecentMessage) {
+            self.scrollToBottomAnimated(true)
+        }
+
     }
     
     
     //MARK: JSQMessages CollectionView DataSource
     
     override func senderId() -> String {
-        return User.Swarup.rawValue
+        return "309-41802-1990"
     }
     
     override func senderDisplayName() -> String {
-        return getName(User.Swarup)
+        return "Swarup Pattnaik"
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -393,9 +367,9 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
     
     override func collectionView(collectionView: JSQMessagesCollectionView, avatarImageDataForItemAtIndexPath indexPath: NSIndexPath) -> JSQMessageAvatarImageDataSource? {
         let message = messages[indexPath.item]
-        return getAvatar(message.senderId)
+        return getAvatar(message.senderDisplayName)
     }
-    
+
     override func collectionView(collectionView: JSQMessagesCollectionView, attributedTextForCellTopLabelAtIndexPath indexPath: NSIndexPath) -> NSAttributedString? {
         /**
          *  This logic should be consistent with what you return from `heightForCellTopLabelAtIndexPath:`
@@ -478,5 +452,23 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
         
         return kJSQMessagesCollectionViewCellLabelHeightDefault;
     }
+    
+    //MARK:- Helper Method for getting an avatar for a specific User.
+    func getAvatar(user: String) -> JSQMessagesAvatarImage{
+        
+        // derive initials from a name
+        let string  = NSString(string:user)
+        print(string)
+        
+        let array = string.componentsSeparatedByString(" ")
+        let subString1 = array.first?.stringByTrimmingCharactersInSet(NSCharacterSet.lowercaseLetterCharacterSet())
+        let subString2 = array.last?.stringByTrimmingCharactersInSet(NSCharacterSet.lowercaseLetterCharacterSet())
+        let intials = String("\(subString1!)\(subString2!)")
+        
+        print(intials)
+        let avatar = JSQMessagesAvatarImageFactory().avatarImageWithUserInitials(intials, backgroundColor: UIColor.jsq_messageBubbleGreenColor(), textColor: UIColor.whiteColor(), font: UIFont.systemFontOfSize(12))
+        return avatar
+    }
+
 }
 

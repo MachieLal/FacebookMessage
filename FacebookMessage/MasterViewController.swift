@@ -29,6 +29,7 @@ class MasterViewController: UITableViewController {
             }
 //            print(object["contacts"]!)
 
+            self.title = "Contacts"
         }
         catch {
             let nserror = error as NSError
@@ -38,8 +39,8 @@ class MasterViewController: UITableViewController {
         
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
-        let addButton = UIBarButtonItem(barButtonSystemItem: .Compose, target: self, action: #selector(showComposeViewModally(_:)))
-        self.navigationItem.rightBarButtonItem = addButton
+//        let addButton = UIBarButtonItem(barButtonSystemItem: .Compose, target: self, action: #selector(showComposeViewModally(_:)))
+//        self.navigationItem.rightBarButtonItem = addButton
 //        if let split = self.splitViewController {
 //            let controllers = split.viewControllers
 //            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
@@ -58,9 +59,6 @@ class MasterViewController: UITableViewController {
         super.didReceiveMemoryWarning()
     }
     
-    func showComposeViewModally(sender: AnyObject) {
-        self.performSegueWithIdentifier("showComposeView", sender: sender)
-    }
     
     func insertNewObject(message: [String:AnyObject]) {
         let context = self.managedObjectContext!
@@ -103,15 +101,13 @@ class MasterViewController: UITableViewController {
                 let object = self.contactsArray[indexPath.row]
                 
                 let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
-                controller.detailItem = object
+                controller.title = object.valueForKey("name")! as? String
+                controller.userDetails = object
 //                controller.title = toName
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
         }
-        //        if segue.identifier == "showComposeView" {
-        //
-        //        }
     }
     
     // MARK: - Table View
@@ -136,6 +132,6 @@ class MasterViewController: UITableViewController {
     
     func configureCell(cell: UITableViewCell, withObject object: [String: String]) {
         cell.textLabel!.text = object["name"]
-//        cell.detailTextLabel!.text = object["text"]
+        cell.detailTextLabel!.text = object["displayName"]
     }
 }

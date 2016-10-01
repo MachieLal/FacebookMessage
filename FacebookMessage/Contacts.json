@@ -1,29 +1,39 @@
 {
     "contacts": [
                  {
-                 "name": "A1",
+                 "name": "Leonard",
+                 "displayName" : "Dan Leonard",
                  "activeTime": "2013-01-15",
                  "isOnline": "1",
+                 "avatarID": "053496-4509-288"
                  },
                  {
-                 "name": "A2",
-                 "activeTime": "2013-01-15",
-                 "isOnline": "0",
-                 },
-                 {
-                 "name": "A3",
-                 "activeTime": "2013-01-15",
-                 "isOnline": "0",
-                 },
-                 {
-                 "name": "A4",
-                 "activeTime": "2013-01-15",
-                 "isOnline": "0",
-                 },
-                 {
-                 "name": "A5",
+                 "name": "Squires",
+                 "displayName" : "Jesse Squires",
                  "activeTime": "2013-01-15",
                  "isOnline": "1",
+                 "avatarID": "053496-4509-289"
+                 },
+                 {
+                 "name": "Cook",
+                 "displayName" : "Tim Cook",
+                 "activeTime": "2013-01-15",
+                 "isOnline": "1",
+                 "avatarID": "468-768355-23123"
+                 },
+                 {
+                 "name": "Jobs",
+                 "displayName" : "Steve Jobs",
+                 "activeTime": "2013-01-15",
+                 "isOnline": "1",
+                 "avatarID": "053496-4509-288"
+                 },
+                 {
+                 "name": "Stark",
+                 "displayName" : "Tony Stark",
+                 "activeTime": "2013-01-15",
+                 "isOnline": "1",
+                 "avatarID": "707-8956784-57"
                  }
     ]
 }
