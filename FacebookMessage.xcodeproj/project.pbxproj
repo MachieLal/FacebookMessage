@@ -17,7 +17,6 @@
 		824334BF1D994E270072F751 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 824334BE1D994E270072F751 /* Assets.xcassets */; };
 		824334C21D994E270072F751 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 824334C01D994E270072F751 /* LaunchScreen.storyboard */; };
 		82B2EAA41D9AAFFB00169E67 /* Contacts.json in Resources */ = {isa = PBXBuildFile; fileRef = 82B2EAA31D9AAFFB00169E67 /* Contacts.json */; };
-		82B2EAA71D9ABBF400169E67 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B2EAA51D9ABBF400169E67 /* Conversation.swift */; };
 		82B2EAAD1D9ABE4F00169E67 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82B2EAAB1D9ABE4F00169E67 /* Images.xcassets */; };
 		82B2EAAE1D9ABE4F00169E67 /* jsq_messages_sample.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 82B2EAAC1D9ABE4F00169E67 /* jsq_messages_sample.m4a */; };
 		82C66C541D9B7920007E46EF /* SmileyCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C66C531D9B7920007E46EF /* SmileyCollectionViewController.swift */; };
@@ -40,7 +39,6 @@
 		824334C11D994E270072F751 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		824334C31D994E270072F751 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82B2EAA31D9AAFFB00169E67 /* Contacts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Contacts.json; sourceTree = "<group>"; };
-		82B2EAA51D9ABBF400169E67 /* Conversation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
 		82B2EAAB1D9ABE4F00169E67 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		82B2EAAC1D9ABE4F00169E67 /* jsq_messages_sample.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = jsq_messages_sample.m4a; sourceTree = "<group>"; };
 		82C66C531D9B7920007E46EF /* SmileyCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmileyCollectionViewController.swift; sourceTree = "<group>"; };
@@ -107,7 +105,6 @@
 			isa = PBXGroup;
 			children = (
 				823F55AD1D9FB72800919D4C /* Smiley Image Classes */,
-				82B2EAA51D9ABBF400169E67 /* Conversation.swift */,
 				824334B21D994E270072F751 /* AppDelegate.swift */,
 				824334B71D994E270072F751 /* MasterViewController.swift */,
 				824334B91D994E270072F751 /* DetailViewController.swift */,
@@ -253,7 +250,6 @@
 				824334B61D994E270072F751 /* FacebookMessage.xcdatamodeld in Sources */,
 				824334B81D994E270072F751 /* MasterViewController.swift in Sources */,
 				823F55AC1D9F985A00919D4C /* SmileyCollectionViewCell.swift in Sources */,
-				82B2EAA71D9ABBF400169E67 /* Conversation.swift in Sources */,
 				82C66C541D9B7920007E46EF /* SmileyCollectionViewController.swift in Sources */,
 				824334BA1D994E270072F751 /* DetailViewController.swift in Sources */,
 			);

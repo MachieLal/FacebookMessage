@@ -8,231 +8,120 @@
 
 import UIKit
 import JSQMessagesViewController
+import CoreData
 
 class DetailViewController: JSQMessagesViewController, UIViewControllerTransitioningDelegate {
+    
+    //MARK: - Object Properties
+    var managedObjectContext: NSManagedObjectContext? = nil
+
     var messages = [JSQMessage]()
     let defaults = NSUserDefaults.standardUserDefaults()
-    var conversation: Conversation?
+
     var incomingBubble: JSQMessagesBubbleImage!
     var outgoingBubble: JSQMessagesBubbleImage!
-    var userDetails: AnyObject? = nil
-    private var displayName: String!
     
+    var contactAvatarID = ""
+    var contactDisplayName = ""
+    
+    var userDetails: AnyObject? {
+        didSet {
+            contactAvatarID = (userDetails!.valueForKey("avatarID") as? String)!
+            contactDisplayName = (userDetails!.valueForKey("displayName") as? String)!
+            let appDelegate = UIApplication.sharedApplication().delegate as? AppDelegate
+            self.managedObjectContext = appDelegate?.managedObjectContext
+        }
+    }
+    
+    //MARK: - View Controller LCMs
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Bubbles with tails
+        incomingBubble = JSQMessagesBubbleImageFactory().incomingMessagesBubbleImageWithColor(UIColor.jsq_messageBubbleBlueColor())
+        outgoingBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImageWithColor(UIColor.lightGrayColor())
+    
+        collectionView?.collectionViewLayout.incomingAvatarViewSize = CGSize(width: kJSQMessagesCollectionViewAvatarSizeDefault, height:kJSQMessagesCollectionViewAvatarSizeDefault )
+        collectionView?.collectionViewLayout.outgoingAvatarViewSize = CGSize(width: kJSQMessagesCollectionViewAvatarSizeDefault, height:kJSQMessagesCollectionViewAvatarSizeDefault )
         
-        // Setup navigation
-//        setupBackButton()
-
-        /**
-         *  Override point:
-         *
-         *  Example of how to cusomize the bubble appearence for incoming and outgoing messages.
-         *  Based on the Settings of the user display two differnent type of bubbles.
-         *
-         */
-        
-//        if defaults.boolForKey(Setting.removeBubbleTails.rawValue) {
-//            // Make taillessBubbles
-//            incomingBubble = JSQMessagesBubbleImageFactory(bubbleImage: UIImage.jsq_bubbleCompactTaillessImage(), capInsets: UIEdgeInsetsZero, layoutDirection: UIApplication.sharedApplication().userInterfaceLayoutDirection).incomingMessagesBubbleImageWithColor(UIColor.jsq_messageBubbleBlueColor())
-//            outgoingBubble = JSQMessagesBubbleImageFactory(bubbleImage: UIImage.jsq_bubbleCompactTaillessImage(), capInsets: UIEdgeInsetsZero, layoutDirection: UIApplication.sharedApplication().userInterfaceLayoutDirection).outgoingMessagesBubbleImageWithColor(UIColor.lightGrayColor())
-//        }
-//        else {
-            // Bubbles with tails
-            incomingBubble = JSQMessagesBubbleImageFactory().incomingMessagesBubbleImageWithColor(UIColor.jsq_messageBubbleBlueColor())
-            outgoingBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImageWithColor(UIColor.lightGrayColor())
-//        }
-        
-        /**
-         *  Example on showing or removing Avatars based on user settings.
-         */
-        
-//        if defaults.boolForKey(Setting.removeAvatar.rawValue) {
-//            collectionView?.collectionViewLayout.incomingAvatarViewSize = .zero
-//            collectionView?.collectionViewLayout.outgoingAvatarViewSize = .zero
-//        } else {
-            collectionView?.collectionViewLayout.incomingAvatarViewSize = CGSize(width: kJSQMessagesCollectionViewAvatarSizeDefault, height:kJSQMessagesCollectionViewAvatarSizeDefault )
-            collectionView?.collectionViewLayout.outgoingAvatarViewSize = CGSize(width: kJSQMessagesCollectionViewAvatarSizeDefault, height:kJSQMessagesCollectionViewAvatarSizeDefault )
-//        }
         
         // Show Button to simulate incoming messages
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.jsq_defaultTypingIndicatorImage(), style: .Plain, target: self, action: #selector(receiveMessagePressed))
         
         // This is a beta feature that mostly works but to make things more stable it is diabled.
         collectionView?.collectionViewLayout.springinessEnabled = false
-        
         automaticallyScrollsToMostRecentMessage = true
-        
         self.collectionView?.reloadData()
         self.collectionView?.layoutIfNeeded()
-    }
-    
-    func setupBackButton() {
-        let backButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(backButtonTapped))
-        navigationItem.leftBarButtonItem = backButton
-    }
-    func backButtonTapped() {
-        dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    func receiveMessagePressed(sender: UIBarButtonItem) {
-        /**
-         *  Show the typing indicator to be shown
-         */
-        self.showTypingIndicator = !self.showTypingIndicator
-        
-        /**
-         *  Scroll to actually view the indicator
-         */
-        self.scrollToBottomAnimated(true)
-        
-        /**
-         *  Copy last sent message, this will be the new "received" message
-         */
-        var copyMessage = self.messages.last?.copy()
-        
-        let contactAvatarID = userDetails!.valueForKey("avatarID") as? String
-        let contactDisplayName = userDetails!.valueForKey("displayName") as? String
 
-        if (copyMessage == nil) {
-            copyMessage = JSQMessage(senderId: contactAvatarID!, displayName: contactDisplayName!, text: "First received!")
-        }
-        
-        var newMessage:JSQMessage!
-        var newMediaData:JSQMessageMediaData!
-        var newMediaAttachmentCopy:AnyObject?
-        
-        if copyMessage!.isMediaMessage() {
-            /**
-             *  Last message was a media message
-             */
-            let copyMediaData = copyMessage!.media
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
             
-            switch copyMediaData {
-            case is JSQPhotoMediaItem:
-                let photoItemCopy = (copyMediaData as! JSQPhotoMediaItem).copy() as! JSQPhotoMediaItem
-                photoItemCopy.appliesMediaViewMaskAsOutgoing = false
+            print("This is run on the main queue")
+            let fetchRequest = NSFetchRequest(entityName: "Message")
+            fetchRequest.predicate = NSPredicate(format: "senderId == %@", self.contactAvatarID)
+            fetchRequest.returnsObjectsAsFaults = false;
+            
+            var results : [AnyObject]? = nil
+            // Fetch Request
+            do {
+                results = try self.managedObjectContext!.executeFetchRequest(fetchRequest)
+//               print("Retrieval Data::::\n\(results)")
                 
-                newMediaAttachmentCopy = UIImage(CGImage: photoItemCopy.image!.CGImage!)
-                
-                /**
-                 *  Set image to nil to simulate "downloading" the image
-                 *  and show the placeholder view5017
-                 */
-                photoItemCopy.image = nil;
-                
-                newMediaData = photoItemCopy
-            case is JSQLocationMediaItem:
-                let locationItemCopy = (copyMediaData as! JSQLocationMediaItem).copy() as! JSQLocationMediaItem
-                locationItemCopy.appliesMediaViewMaskAsOutgoing = false
-                newMediaAttachmentCopy = locationItemCopy.location!.copy()
-                
-                /**
-                 *  Set location to nil to simulate "downloading" the location data
-                 */
-                locationItemCopy.location = nil;
-                
-                newMediaData = locationItemCopy;
-            case is JSQVideoMediaItem:
-                let videoItemCopy = (copyMediaData as! JSQVideoMediaItem).copy() as! JSQVideoMediaItem
-                videoItemCopy.appliesMediaViewMaskAsOutgoing = false
-                newMediaAttachmentCopy = videoItemCopy.fileURL!.copy()
-                
-                /**
-                 *  Reset video item to simulate "downloading" the video
-                 */
-                videoItemCopy.fileURL = nil;
-                videoItemCopy.isReadyToPlay = false;
-                
-                newMediaData = videoItemCopy;
-            case is JSQAudioMediaItem:
-                let audioItemCopy = (copyMediaData as! JSQAudioMediaItem).copy() as! JSQAudioMediaItem
-                audioItemCopy.appliesMediaViewMaskAsOutgoing = false
-                newMediaAttachmentCopy = audioItemCopy.audioData!.copy()
-                
-                /**
-                 *  Reset audio item to simulate "downloading" the audio
-                 */
-                audioItemCopy.audioData = nil;
-                
-                newMediaData = audioItemCopy;
-            default:
-                assertionFailure("Error: This Media type was not recognised")
+            } catch let error as NSError {
+                print("Could not fetch \(error), \(error.userInfo)")
             }
-            
-            newMessage = JSQMessage(senderId: contactAvatarID!, displayName: contactDisplayName!, media: newMediaData)
-        }
-        else {
-            /**
-             *  Last message was a text message
-             */
-            
-            newMessage = JSQMessage(senderId: contactAvatarID!, displayName: contactDisplayName!, text: copyMessage!.text)
-        }
-        
-        /**
-         *  Upon receiving a message, you should:
-         *
-         *  1. Play sound (optional)
-         *  2. Add new JSQMessageData object to your data source
-         *  3. Call `finishReceivingMessage`
-         */
-        
-        self.messages.append(newMessage)
-        self.finishReceivingMessageAnimated(true)
-        if (self.automaticallyScrollsToMostRecentMessage) {
-            self.scrollToBottomAnimated(true)
-        }
+            self.messages.removeAll()
+            if let objects = results as? [NSManagedObject] {
+                if objects.count > 0 {
+                    let media = objects.first!.valueForKey("media")! as? NSData
+                    self.messages = NSKeyedUnarchiver.unarchiveObjectWithData(media!) as! [JSQMessage]
+                    
+                    self.collectionView?.reloadData()
+                    self.collectionView?.layoutIfNeeded()
 
-        if newMessage.isMediaMessage {
-            /**
-             *  Simulate "downloading" media
-             */
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) {
-                /**
-                 *  Media is "finished downloading", re-display visible cells
-                 *
-                 *  If media cell is not visible, the next time it is dequeued the view controller will display its new attachment data
-                 *
-                 *  Reload the specific item, or simply call `reloadData`
-                 */
-                
-                switch newMediaData {
-                case is JSQPhotoMediaItem:
-                    (newMediaData as! JSQPhotoMediaItem).image = newMediaAttachmentCopy as? UIImage
-                    self.collectionView!.reloadData()
-                case is JSQLocationMediaItem:
-                    (newMediaData as! JSQLocationMediaItem).setLocation(newMediaAttachmentCopy as? CLLocation, withCompletionHandler: {
-                        self.collectionView!.reloadData()
-                    })
-                case is JSQVideoMediaItem:
-                    (newMediaData as! JSQVideoMediaItem).fileURL = newMediaAttachmentCopy as? NSURL
-                    (newMediaData as! JSQVideoMediaItem).isReadyToPlay = true
-                    self.collectionView!.reloadData()
-                case is JSQAudioMediaItem:
-                    (newMediaData as! JSQAudioMediaItem).audioData = newMediaAttachmentCopy as? NSData
-                    self.collectionView!.reloadData()
-                default:
-                    assertionFailure("Error: This Media type was not recognised")
+                    if (self.automaticallyScrollsToMostRecentMessage) {
+                        self.scrollToBottomAnimated(true)
+                    }
                 }
-            }
-        }
+                    print("JSQMessages:::\(self.messages)")
+                }
+        })
+        
     }
     
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        // To save the current Chat State in Core Data
+        if self.messages.count > 0 {
+            let qualityOfServiceClass = QOS_CLASS_BACKGROUND
+            let backgroundQueue = dispatch_get_global_queue(qualityOfServiceClass, 0)
+            dispatch_async(backgroundQueue, {
+                self.saveChat()
+            })
+        }
+
+    }
+
+    func presentationControllerForPresentedViewController(presented: UIViewController, presentingViewController presenting: UIViewController, sourceViewController source: UIViewController) -> UIPresentationController? {
+        return HalfSizePresentationController(presentedViewController: presented, presentingViewController: self)
+    }
+ 
     // MARK: JSQMessagesViewController method overrides
     override func didPressSendButton(button: UIButton, withMessageText text: String, senderId: String, senderDisplayName: String, date: NSDate) {
-        /**
-         *  Sending a message. Your implementation of this method should do *at least* the following:
-         *
-         *  1. Play sound (optional)
-         *  2. Add new id<JSQMessageData> object to your data source
-         *  3. Call `finishSendingMessage`
-         */
         
         let message = JSQMessage(senderId: senderId, senderDisplayName: senderDisplayName, date: date, text: text)
+
+        saveRecentMessage(message)
+        
         self.messages.append(message)
         self.finishSendingMessageAnimated(true)
+        
         if (self.automaticallyScrollsToMostRecentMessage) {
             self.scrollToBottomAnimated(true)
         }
@@ -245,13 +134,11 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
         let sheet = UIAlertController(title: "Media messages", message: nil, preferredStyle: .ActionSheet)
 
         let photoAction = UIAlertAction(title: "Send photo/ smiley", style: .Default) { (action) in
-            /**
-             *  Create UIImagePicker to send photo
-             */
+
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let pvc = storyboard.instantiateViewControllerWithIdentifier("Smiley Collection View Controller") as! SmileyCollectionViewController
             
-            //        Load Images
+            //Load stored Images
             for i in 1...50
             {
                 let image = UIImage.init(named: "\(i).jpg")
@@ -267,21 +154,21 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
 
         let locationAction = UIAlertAction(title: "Send location", style: .Default) { (action) in
 
-            //  Add fake location
+            //  Add stub location
             let locationItem = self.buildLocationItem()
 
             self.addMedia(locationItem)
         }
 
         let videoAction = UIAlertAction(title: "Send video", style: .Default) { (action) in
-            //  Add fake video
+            //  Add stub video
             let videoItem = self.buildVideoItem()
 
             self.addMedia(videoItem)
         }
 
         let audioAction = UIAlertAction(title: "Send audio", style: .Default) { (action) in
-             //  Add fake audio
+             //  Add stub audio
             let audioItem = self.buildAudioItem()
 
             self.addMedia(audioItem)
@@ -296,11 +183,6 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
         sheet.addAction(cancelAction)
         
         self.presentViewController(sheet, animated: true, completion: nil)
-
-}
-    
-    func presentationControllerForPresentedViewController(presented: UIViewController, presentingViewController presenting: UIViewController, sourceViewController source: UIViewController) -> UIPresentationController? {
-        return HalfSizePresentationController(presentedViewController: presented, presentingViewController: self)
     }
     
     func buildVideoItem() -> JSQVideoMediaItem {
@@ -332,7 +214,10 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
     }
     
     func addMedia(media:JSQMediaItem) {
-        let message = JSQMessage(senderId: self.senderId(), displayName: self.senderDisplayName(), media: media)
+        let message = JSQMessage(senderId: self.senderId(), senderDisplayName:  self.senderDisplayName(), date: NSDate(), media: media)
+        
+        saveRecentMessage(message)
+
         self.messages.append(message)
         self.finishSendingMessageAnimated(true)
         if (self.automaticallyScrollsToMostRecentMessage) {
@@ -453,21 +338,226 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
         return kJSQMessagesCollectionViewCellLabelHeightDefault;
     }
     
-    //MARK:- Helper Method for getting an avatar for a specific User.
+    //MARK:- Helper Method 
+
+    // This method is called when the Right Navigation Bar Button is Clicked
+    func receiveMessagePressed(sender: UIBarButtonItem) {
+        
+        //Show the typing indicator to be shown
+        self.showTypingIndicator = !self.showTypingIndicator
+        
+        //Scroll to actually view the indicator
+        self.scrollToBottomAnimated(true)
+        
+        //Copy last sent message, this will be the new "received" message
+        var copyMessage = self.messages.last?.copy()
+        
+        if (copyMessage == nil) {
+            copyMessage = JSQMessage(senderId: contactAvatarID, senderDisplayName: contactDisplayName, date: NSDate(), text: "First received!")
+        }
+        
+        var newMessage:JSQMessage!
+        var newMediaData:JSQMessageMediaData!
+        var newMediaAttachmentCopy:AnyObject?
+        
+        if copyMessage!.isMediaMessage() {
+            
+            //Last message was a media message
+            let copyMediaData = copyMessage!.media
+            
+            switch copyMediaData {
+                
+            case is JSQPhotoMediaItem:
+                let photoItemCopy = (copyMediaData as! JSQPhotoMediaItem).copy() as! JSQPhotoMediaItem
+                photoItemCopy.appliesMediaViewMaskAsOutgoing = false
+                
+                newMediaAttachmentCopy = UIImage(CGImage: photoItemCopy.image!.CGImage!)
+                
+                /**
+                 *  Set image to nil to simulate "downloading" the image
+                 *  and show the placeholder view5017
+                 */
+                photoItemCopy.image = nil;
+                
+                newMediaData = photoItemCopy
+                
+            case is JSQLocationMediaItem:
+                let locationItemCopy = (copyMediaData as! JSQLocationMediaItem).copy() as! JSQLocationMediaItem
+                locationItemCopy.appliesMediaViewMaskAsOutgoing = false
+                newMediaAttachmentCopy = locationItemCopy.location!.copy()
+                
+                /**
+                 *  Set location to nil to simulate "downloading" the location data
+                 */
+                locationItemCopy.location = nil;
+                
+                newMediaData = locationItemCopy;
+                
+            case is JSQVideoMediaItem:
+                let videoItemCopy = (copyMediaData as! JSQVideoMediaItem).copy() as! JSQVideoMediaItem
+                videoItemCopy.appliesMediaViewMaskAsOutgoing = false
+                newMediaAttachmentCopy = videoItemCopy.fileURL!.copy()
+                
+                /**
+                 *  Reset video item to simulate "downloading" the video
+                 */
+                videoItemCopy.fileURL = nil;
+                videoItemCopy.isReadyToPlay = false;
+                
+                newMediaData = videoItemCopy;
+                
+            case is JSQAudioMediaItem:
+                let audioItemCopy = (copyMediaData as! JSQAudioMediaItem).copy() as! JSQAudioMediaItem
+                audioItemCopy.appliesMediaViewMaskAsOutgoing = false
+                newMediaAttachmentCopy = audioItemCopy.audioData!.copy()
+                
+                /**
+                 *  Reset audio item to simulate "downloading" the audio
+                 */
+                audioItemCopy.audioData = nil;
+                
+                newMediaData = audioItemCopy;
+                
+            default:
+                assertionFailure("Error: This Media type was not recognised")
+            }
+            
+            newMessage = JSQMessage(senderId: contactAvatarID, senderDisplayName: contactDisplayName, date: NSDate(), media: newMediaData)
+        }
+        else {
+            //Last message was a text message
+            newMessage = JSQMessage(senderId: contactAvatarID, senderDisplayName: contactDisplayName, date: NSDate(), text: copyMessage!.text)
+        }
+        
+        saveRecentMessage(newMessage)
+        
+        self.messages.append(newMessage)
+        self.finishReceivingMessageAnimated(true)
+        if (self.automaticallyScrollsToMostRecentMessage) {
+            self.scrollToBottomAnimated(true)
+        }
+        
+        if newMessage.isMediaMessage {
+            /**
+             *  Simulate "downloading" media
+             */
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) {
+                /**
+                 *  Media is "finished downloading", re-display visible cells
+                 *
+                 *  If media cell is not visible, the next time it is dequeued the view controller will display its new attachment data
+                 *
+                 *  Reload the specific item, or simply call `reloadData`
+                 */
+                
+                switch newMediaData {
+                case is JSQPhotoMediaItem:
+                    (newMediaData as! JSQPhotoMediaItem).image = newMediaAttachmentCopy as? UIImage
+                    self.collectionView!.reloadData()
+                case is JSQLocationMediaItem:
+                    (newMediaData as! JSQLocationMediaItem).setLocation(newMediaAttachmentCopy as? CLLocation, withCompletionHandler: {
+                        self.collectionView!.reloadData()
+                    })
+                case is JSQVideoMediaItem:
+                    (newMediaData as! JSQVideoMediaItem).fileURL = newMediaAttachmentCopy as? NSURL
+                    (newMediaData as! JSQVideoMediaItem).isReadyToPlay = true
+                    self.collectionView!.reloadData()
+                case is JSQAudioMediaItem:
+                    (newMediaData as! JSQAudioMediaItem).audioData = newMediaAttachmentCopy as? NSData
+                    self.collectionView!.reloadData()
+                default:
+                    assertionFailure("Error: This Media type was not recognised")
+                }
+            }
+        }
+    }
+    
+    //for getting an avatar for a specific User.
     func getAvatar(user: String) -> JSQMessagesAvatarImage{
         
         // derive initials from a name
         let string  = NSString(string:user)
-        print(string)
+        //print(string)
         
         let array = string.componentsSeparatedByString(" ")
         let subString1 = array.first?.stringByTrimmingCharactersInSet(NSCharacterSet.lowercaseLetterCharacterSet())
         let subString2 = array.last?.stringByTrimmingCharactersInSet(NSCharacterSet.lowercaseLetterCharacterSet())
         let intials = String("\(subString1!)\(subString2!)")
         
-        print(intials)
+        //print(intials)
         let avatar = JSQMessagesAvatarImageFactory().avatarImageWithUserInitials(intials, backgroundColor: UIColor.jsq_messageBubbleGreenColor(), textColor: UIColor.whiteColor(), font: UIFont.systemFontOfSize(12))
         return avatar
+    }
+
+    func saveRecentMessage(message: JSQMessage) {
+        
+        var mediaText = ""
+
+        if message.isMediaMessage {
+            
+            let mediaData = message.media
+            switch mediaData {
+            case is JSQPhotoMediaItem:
+                mediaText = String("Image - JPEG")
+                
+            case is JSQLocationMediaItem:
+                mediaText = String("Location - latitude: 37.795313, longitude: -122.39375699999999")
+                
+            case is JSQVideoMediaItem:
+                mediaText = String("Video - MOV")
+                
+            case is JSQAudioMediaItem:
+                mediaText = String("Audio - jsq_messages_sample.m4a)")
+                
+            default:
+                assertionFailure("Error: This Media type was not recognised")
+            }
+        }
+        else {
+           mediaText = message.text
+        }
+
+        print("mediaText = \(mediaText)")
+        
+        let defaults = NSUserDefaults.standardUserDefaults()
+        defaults.setObject(mediaText, forKey: contactAvatarID)
+        defaults.synchronize()
+    }
+    
+    func saveChat() {
+        
+        let context = self.managedObjectContext!
+        let fetchRequest = NSFetchRequest(entityName: "Message")
+        fetchRequest.fetchBatchSize = 20
+        fetchRequest.predicate = NSPredicate(format: "senderId == %@", contactAvatarID)
+        // delete First and Save new
+        deleteObjectForFetchRequest(fetchRequest)
+        
+        // It creates a storage element for the current object!
+        let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Message", inManagedObjectContext: context)
+        newManagedObject.setValue(contactAvatarID, forKey: "senderId")
+        let data = NSKeyedArchiver.archivedDataWithRootObject(messages)
+        
+        newManagedObject.setValue(data, forKey: "media")
+        do {
+            // Save the context.
+            try context.save()
+            
+        } catch let error as NSError {
+            print("Core Data error \(error), \(error.userInfo)")
+            abort()
+        }
+    }
+    
+    func deleteObjectForFetchRequest(fetchRequest: NSFetchRequest) {
+        let batchRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        batchRequest.resultType = .ResultTypeCount
+        // Batch Delete Request
+        do {
+            try self.managedObjectContext!.executeRequest(_:batchRequest)
+        } catch let error as NSError {
+            print("Batch Delete Error - \(error), \(error.userInfo)")
+        }
     }
 
 }

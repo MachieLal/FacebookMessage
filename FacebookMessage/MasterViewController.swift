@@ -7,18 +7,16 @@
 //
 
 import UIKit
-import CoreData
 
 class MasterViewController: UITableViewController {
     
 //    var detailViewController: DetailViewController? = nil
-    var managedObjectContext: NSManagedObjectContext? = nil
     
     var contactsArray = NSMutableArray()// data model object
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+
         do {
             let modelURL = NSBundle.mainBundle().URLForResource("Contacts", withExtension: "json")!
             let jsonData = NSData.init(contentsOfURL: modelURL)
@@ -38,9 +36,7 @@ class MasterViewController: UITableViewController {
         }
         
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
-        
-//        let addButton = UIBarButtonItem(barButtonSystemItem: .Compose, target: self, action: #selector(showComposeViewModally(_:)))
-//        self.navigationItem.rightBarButtonItem = addButton
+
 //        if let split = self.splitViewController {
 //            let controllers = split.viewControllers
 //            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
@@ -50,6 +46,7 @@ class MasterViewController: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         self.clearsSelectionOnViewWillAppear = self.splitViewController!.collapsed
         super.viewWillAppear(animated)
+        self.tableView.reloadData()
 //        autoreleasepool{updateTableView()}
         
         
@@ -60,36 +57,6 @@ class MasterViewController: UITableViewController {
     }
     
     
-    func insertNewObject(message: [String:AnyObject]) {
-        let context = self.managedObjectContext!
-        let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Message", inManagedObjectContext: context)
-        
-        newManagedObject.setValue(message["timeStamp"] as? String, forKey: "timeStamp")
-        newManagedObject.setValue(message["toName"] as? String, forKey: "toName")
-        newManagedObject.setValue(message["fromName"] as? String, forKey: "fromName")
-        newManagedObject.setValue(message["text"] as? String, forKey: "text")
-        newManagedObject.setValue(message["isSent"] as? Bool, forKey: "isSent")
-        
-        // Save the context.
-        do {
-            try context.save()
-        } catch let error as NSError {
-            print("Unresolved error \(error), \(error.userInfo)")
-            abort()
-        }
-    }
-    
-    func deleteObjectForFetchRequest(fetchRequest: NSFetchRequest) {
-        let batchRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        batchRequest.resultType = .ResultTypeCount
-        // Batch Delete Request
-        do {
-            let results = try self.managedObjectContext!.executeRequest(_:batchRequest)
-            print("batchRequest result \(results)")
-        } catch let error as NSError {
-            print("Could not fetch \(error), \(error.userInfo)")
-        }
-    }
     
     
     // MARK: - Segues
@@ -103,7 +70,7 @@ class MasterViewController: UITableViewController {
                 let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
                 controller.title = object.valueForKey("name")! as? String
                 controller.userDetails = object
-//                controller.title = toName
+
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
@@ -132,6 +99,7 @@ class MasterViewController: UITableViewController {
     
     func configureCell(cell: UITableViewCell, withObject object: [String: String]) {
         cell.textLabel!.text = object["name"]
-        cell.detailTextLabel!.text = object["displayName"]
+        let key = object["avatarID"]
+        cell.detailTextLabel!.text = NSUserDefaults.standardUserDefaults().objectForKey(key!) as? String
     }
 }

@@ -22,78 +22,77 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem()
         splitViewController.delegate = self
         
-        self.registerForLocalNotifications(application)
+//        self.registerForLocalNotifications(application)
         
-        let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
-        controller = masterNavigationController.topViewController as! MasterViewController
-        controller.managedObjectContext = self.managedObjectContext
+//        let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
+//        controller = masterNavigationController.topViewController as! MasterViewController
         return true
     }
     
     // MARK: Register for push
-    func registerForLocalNotifications(application: UIApplication) {
-        let viewAction = UIMutableUserNotificationAction()
-        viewAction.identifier = "VIEW_IDENTIFIER"
-        viewAction.title = "View"
-        viewAction.activationMode = .Foreground
-        
-        let newsCategory = UIMutableUserNotificationCategory()
-        newsCategory.identifier = "NEWS_CATEGORY"
-        newsCategory.setActions([viewAction], forContext: .Default)
-        
-        let categories: Set<UIUserNotificationCategory> = [newsCategory]
-        
-        let notificationSettings = UIUserNotificationSettings(forTypes: [.Badge, .Sound, .Alert], categories: categories)
-        application.registerUserNotificationSettings(notificationSettings)
-    }
+//    func registerForLocalNotifications(application: UIApplication) {
+//        let viewAction = UIMutableUserNotificationAction()
+//        viewAction.identifier = "VIEW_IDENTIFIER"
+//        viewAction.title = "View"
+//        viewAction.activationMode = .Foreground
+//        
+//        let newsCategory = UIMutableUserNotificationCategory()
+//        newsCategory.identifier = "NEWS_CATEGORY"
+//        newsCategory.setActions([viewAction], forContext: .Default)
+//        
+//        let categories: Set<UIUserNotificationCategory> = [newsCategory]
+//        
+//        let notificationSettings = UIUserNotificationSettings(forTypes: [.Badge, .Sound, .Alert], categories: categories)
+//        application.registerUserNotificationSettings(notificationSettings)
+//    }
+//    
+//    
+//    func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
+//        if notificationSettings.types != .None {
+//            
+//            localNotification = UILocalNotification()
+//            localNotification.soundName = "Default"
+//        }
+//    }
+//    
+//    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification)
+//    {
+//        print(notification)
+//        guard notification.userInfo != nil else {
+//            return
+//        }
+//        let fromName = notification.userInfo!["fromName"] as? String
+//        let toName   = notification.userInfo!["toName"] as? String
+//        let text = notification.userInfo!["body"] as? String
+//        let isSent = notification.userInfo!["isSent"] as? Bool
+//        
+//        let dateFormat = NSDateFormatter()
+//        dateFormat.dateFormat = "dd/MM/yyyy HH:mm:ss a"
+//        let date = dateFormat.stringFromDate(NSDate())
+//        
+//        let messageData : [String:AnyObject] = ["fromName":fromName!, "text":text!, "toName":toName!, "timeStamp": date, "isSent" : isSent!]
+//        
+//        
+////        controller.insertNewObject(messageData)
+//        
+//        NSNotificationCenter.defaultCenter().postNotificationName("UpdateDetailViewNotification", object: self, userInfo:["messageData": messageData])
+//        
+//        
+//    }
     
-    
-    func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
-        if notificationSettings.types != .None {
-            
-            localNotification = UILocalNotification()
-            localNotification.soundName = "Default"
-        }
-    }
-    
-    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification)
-    {
-        print(notification)
-        guard notification.userInfo != nil else {
-            return
-        }
-        let fromName = notification.userInfo!["fromName"] as? String
-        let toName   = notification.userInfo!["toName"] as? String
-        let text = notification.userInfo!["body"] as? String
-        let isSent = notification.userInfo!["isSent"] as? Bool
-        
-        let dateFormat = NSDateFormatter()
-        dateFormat.dateFormat = "dd/MM/yyyy HH:mm:ss a"
-        let date = dateFormat.stringFromDate(NSDate())
-        
-        let messageData : [String:AnyObject] = ["fromName":fromName!, "text":text!, "toName":toName!, "timeStamp": date, "isSent" : isSent!]
-        
-        
-        controller.insertNewObject(messageData)
-        
-        NSNotificationCenter.defaultCenter().postNotificationName("UpdateDetailViewNotification", object: self, userInfo:["messageData": messageData])
-        
-        
-    }
-    
-    // could not check on simulator
-    func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
-        
-        print(notification)
-        print(identifier)
-        
-        
-        // 3
-        if identifier == "VIEW_IDENTIFIER" {
-            
-        }
-        
-    }
+//    // could not check on simulator
+//    func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
+//        
+//        print(notification)
+//        print(identifier)
+//        
+//        
+//        // 3
+//        if identifier == "VIEW_IDENTIFIER" {
+//            
+//        }
+//        
+//    }
     
     
     func applicationWillResignActive(application: UIApplication) {

@@ -137,7 +137,7 @@
         <!--Smiley Collection View Controller-->
         <scene sceneID="WsW-bZ-8v5">
             <objects>
-                <collectionViewController storyboardIdentifier="Smiley Collection View Controller" modalTransitionStyle="flipHorizontal" modalPresentationStyle="pageSheet" id="bkY-BV-Wzu" customClass="SmileyCollectionViewController" customModule="FacebookMessage" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="Smiley Collection View Controller" modalPresentationStyle="currentContext" id="bkY-BV-Wzu" customClass="SmileyCollectionViewController" customModule="FacebookMessage" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="ceV-Zy-mBd">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -156,7 +156,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" highlighted="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cY4-AV-N4K">
+                                        <imageView contentMode="scaleToFill" semanticContentAttribute="spatial" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cY4-AV-N4K">
                                             <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                         </imageView>
                                     </subviews>
