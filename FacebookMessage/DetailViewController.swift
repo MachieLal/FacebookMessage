@@ -61,7 +61,6 @@ class DetailViewController: JSQMessagesViewController, UIViewControllerTransitio
 
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
             
-            print("This is run on the main queue")
             let fetchRequest = NSFetchRequest(entityName: "Message")
             fetchRequest.predicate = NSPredicate(format: "senderId == %@", self.contactAvatarID)
             fetchRequest.returnsObjectsAsFaults = false;
