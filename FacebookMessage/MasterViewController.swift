@@ -11,7 +11,7 @@ import CoreData
 
 class MasterViewController: UITableViewController {
     
-    var detailViewController: DetailViewController? = nil
+//    var detailViewController: DetailViewController? = nil
     var managedObjectContext: NSManagedObjectContext? = nil
     
     var contactsArray = NSMutableArray()// data model object
@@ -40,10 +40,10 @@ class MasterViewController: UITableViewController {
         
         let addButton = UIBarButtonItem(barButtonSystemItem: .Compose, target: self, action: #selector(showComposeViewModally(_:)))
         self.navigationItem.rightBarButtonItem = addButton
-        if let split = self.splitViewController {
-            let controllers = split.viewControllers
-            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
-        }
+//        if let split = self.splitViewController {
+//            let controllers = split.viewControllers
+//            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
+//        }
     }
     
     override func viewWillAppear(animated: Bool) {

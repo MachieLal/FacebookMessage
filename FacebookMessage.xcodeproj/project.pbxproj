@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		823F55AA1D9F060500919D4C /* HalfSizePresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823F55A91D9F060500919D4C /* HalfSizePresentationController.swift */; };
+		823F55AC1D9F985A00919D4C /* SmileyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823F55AB1D9F985A00919D4C /* SmileyCollectionViewCell.swift */; };
 		824334B31D994E270072F751 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824334B21D994E270072F751 /* AppDelegate.swift */; };
 		824334B61D994E270072F751 /* FacebookMessage.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 824334B41D994E270072F751 /* FacebookMessage.xcdatamodeld */; };
 		824334B81D994E270072F751 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824334B71D994E270072F751 /* MasterViewController.swift */; };
@@ -20,6 +22,7 @@
 		82B2EAAA1D9ABCE900169E67 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B2EAA91D9ABCE900169E67 /* SettingsTableViewController.swift */; };
 		82B2EAAD1D9ABE4F00169E67 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82B2EAAB1D9ABE4F00169E67 /* Images.xcassets */; };
 		82B2EAAE1D9ABE4F00169E67 /* jsq_messages_sample.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 82B2EAAC1D9ABE4F00169E67 /* jsq_messages_sample.m4a */; };
+		82C66C541D9B7920007E46EF /* SmileyCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C66C531D9B7920007E46EF /* SmileyCollectionViewController.swift */; };
 		E1A216D5315394E4BBD718EC /* Pods_FacebookMessage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DA0C2986E78C5549BC8F8C4 /* Pods_FacebookMessage.framework */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +30,8 @@
 		11C03666147EEE21073C84DD /* Pods-FacebookMessage.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FacebookMessage.release.xcconfig"; path = "Pods/Target Support Files/Pods-FacebookMessage/Pods-FacebookMessage.release.xcconfig"; sourceTree = "<group>"; };
 		2560F200E32A07264CAF4B4D /* Pods-FacebookMessage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FacebookMessage.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FacebookMessage/Pods-FacebookMessage.debug.xcconfig"; sourceTree = "<group>"; };
 		4DA0C2986E78C5549BC8F8C4 /* Pods_FacebookMessage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FacebookMessage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		823F55A91D9F060500919D4C /* HalfSizePresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HalfSizePresentationController.swift; sourceTree = "<group>"; };
+		823F55AB1D9F985A00919D4C /* SmileyCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmileyCollectionViewCell.swift; sourceTree = "<group>"; };
 		824334AF1D994E260072F751 /* FacebookMessage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FacebookMessage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		824334B21D994E270072F751 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		824334B51D994E270072F751 /* FacebookMessage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacebookMessage.xcdatamodel; sourceTree = "<group>"; };
@@ -42,6 +47,7 @@
 		82B2EAA91D9ABCE900169E67 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		82B2EAAB1D9ABE4F00169E67 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		82B2EAAC1D9ABE4F00169E67 /* jsq_messages_sample.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = jsq_messages_sample.m4a; sourceTree = "<group>"; };
+		82C66C531D9B7920007E46EF /* SmileyCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmileyCollectionViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,10 +101,13 @@
 			isa = PBXGroup;
 			children = (
 				82B2EAA51D9ABBF400169E67 /* Conversation.swift */,
+				823F55A91D9F060500919D4C /* HalfSizePresentationController.swift */,
 				82B2EAA61D9ABBF400169E67 /* DemoConversation.swift */,
 				824334B21D994E270072F751 /* AppDelegate.swift */,
 				824334B71D994E270072F751 /* MasterViewController.swift */,
 				824334B91D994E270072F751 /* DetailViewController.swift */,
+				82C66C531D9B7920007E46EF /* SmileyCollectionViewController.swift */,
+				823F55AB1D9F985A00919D4C /* SmileyCollectionViewCell.swift */,
 				82B2EAA91D9ABCE900169E67 /* SettingsTableViewController.swift */,
 				824334BB1D994E270072F751 /* Main.storyboard */,
 				824334BE1D994E270072F751 /* Assets.xcassets */,
@@ -238,10 +247,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				824334B31D994E270072F751 /* AppDelegate.swift in Sources */,
+				823F55AA1D9F060500919D4C /* HalfSizePresentationController.swift in Sources */,
 				824334B61D994E270072F751 /* FacebookMessage.xcdatamodeld in Sources */,
 				824334B81D994E270072F751 /* MasterViewController.swift in Sources */,
 				82B2EAA81D9ABBF400169E67 /* DemoConversation.swift in Sources */,
+				823F55AC1D9F985A00919D4C /* SmileyCollectionViewCell.swift in Sources */,
 				82B2EAA71D9ABBF400169E67 /* Conversation.swift in Sources */,
+				82C66C541D9B7920007E46EF /* SmileyCollectionViewController.swift in Sources */,
 				824334BA1D994E270072F751 /* DetailViewController.swift in Sources */,
 				82B2EAAA1D9ABCE900169E67 /* SettingsTableViewController.swift in Sources */,
 			);

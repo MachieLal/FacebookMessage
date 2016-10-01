@@ -9,7 +9,7 @@
 import UIKit
 import JSQMessagesViewController
 
-class DetailViewController: JSQMessagesViewController {
+class DetailViewController: JSQMessagesViewController, UIViewControllerTransitioningDelegate {
     var messages = [JSQMessage]()
     let defaults = NSUserDefaults.standardUserDefaults()
     var conversation: Conversation?
@@ -23,7 +23,7 @@ class DetailViewController: JSQMessagesViewController {
         
         // Setup navigation
         setupBackButton()
-        
+
         /**
          *  Override point:
          *
@@ -32,28 +32,28 @@ class DetailViewController: JSQMessagesViewController {
          *
          */
         
-        if defaults.boolForKey(Setting.removeBubbleTails.rawValue) {
-            // Make taillessBubbles
-            incomingBubble = JSQMessagesBubbleImageFactory(bubbleImage: UIImage.jsq_bubbleCompactTaillessImage(), capInsets: UIEdgeInsetsZero, layoutDirection: UIApplication.sharedApplication().userInterfaceLayoutDirection).incomingMessagesBubbleImageWithColor(UIColor.jsq_messageBubbleBlueColor())
-            outgoingBubble = JSQMessagesBubbleImageFactory(bubbleImage: UIImage.jsq_bubbleCompactTaillessImage(), capInsets: UIEdgeInsetsZero, layoutDirection: UIApplication.sharedApplication().userInterfaceLayoutDirection).outgoingMessagesBubbleImageWithColor(UIColor.lightGrayColor())
-        }
-        else {
+//        if defaults.boolForKey(Setting.removeBubbleTails.rawValue) {
+//            // Make taillessBubbles
+//            incomingBubble = JSQMessagesBubbleImageFactory(bubbleImage: UIImage.jsq_bubbleCompactTaillessImage(), capInsets: UIEdgeInsetsZero, layoutDirection: UIApplication.sharedApplication().userInterfaceLayoutDirection).incomingMessagesBubbleImageWithColor(UIColor.jsq_messageBubbleBlueColor())
+//            outgoingBubble = JSQMessagesBubbleImageFactory(bubbleImage: UIImage.jsq_bubbleCompactTaillessImage(), capInsets: UIEdgeInsetsZero, layoutDirection: UIApplication.sharedApplication().userInterfaceLayoutDirection).outgoingMessagesBubbleImageWithColor(UIColor.lightGrayColor())
+//        }
+//        else {
             // Bubbles with tails
             incomingBubble = JSQMessagesBubbleImageFactory().incomingMessagesBubbleImageWithColor(UIColor.jsq_messageBubbleBlueColor())
             outgoingBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImageWithColor(UIColor.lightGrayColor())
-        }
+//        }
         
         /**
          *  Example on showing or removing Avatars based on user settings.
          */
         
-        if defaults.boolForKey(Setting.removeAvatar.rawValue) {
-            collectionView?.collectionViewLayout.incomingAvatarViewSize = .zero
-            collectionView?.collectionViewLayout.outgoingAvatarViewSize = .zero
-        } else {
+//        if defaults.boolForKey(Setting.removeAvatar.rawValue) {
+//            collectionView?.collectionViewLayout.incomingAvatarViewSize = .zero
+//            collectionView?.collectionViewLayout.outgoingAvatarViewSize = .zero
+//        } else {
             collectionView?.collectionViewLayout.incomingAvatarViewSize = CGSize(width: kJSQMessagesCollectionViewAvatarSizeDefault, height:kJSQMessagesCollectionViewAvatarSizeDefault )
             collectionView?.collectionViewLayout.outgoingAvatarViewSize = CGSize(width: kJSQMessagesCollectionViewAvatarSizeDefault, height:kJSQMessagesCollectionViewAvatarSizeDefault )
-        }
+//        }
         
         // Show Button to simulate incoming messages
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.jsq_defaultTypingIndicatorImage(), style: .Plain, target: self, action: #selector(receiveMessagePressed))
@@ -235,56 +235,100 @@ class DetailViewController: JSQMessagesViewController {
         self.finishSendingMessageAnimated(true)
     }
     
-    override func didPressAccessoryButton(sender: UIButton) {
+    override func didPressAccessoryButton(sender: UIButton)
+    {
         self.inputToolbar.contentView!.textView!.resignFirstResponder()
+//        self.performSegueWithIdentifier("showSmileyCollection", sender: sender)
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let pvc = storyboard.instantiateViewControllerWithIdentifier("Smiley Collection View Controller") as! SmileyCollectionViewController
         
-        let sheet = UIAlertController(title: "Media messages", message: nil, preferredStyle: .ActionSheet)
-        
-        let photoAction = UIAlertAction(title: "Send photo", style: .Default) { (action) in
-            /**
-             *  Create fake photo
-             */
-            let photoItem = JSQPhotoMediaItem(image: UIImage(named: "goldengate"))
-            self.addMedia(photoItem)
+//        Load Images
+        for i in 1...50
+        {
+            let image = UIImage.init(named: "\(i).jpg")
+            pvc.images.addObject(image!)
         }
         
-        let locationAction = UIAlertAction(title: "Send location", style: .Default) { (action) in
-            /**
-             *  Add fake location
-             */
-            let locationItem = self.buildLocationItem()
-            
-            self.addMedia(locationItem)
+        pvc.modalPresentationStyle = UIModalPresentationStyle.Custom
+        pvc.transitioningDelegate = self
+        pvc.view.backgroundColor = UIColor.redColor()
+        pvc.detailViewController = self
+        self.presentViewController(pvc, animated: true, completion: nil)
+
+        if (self.automaticallyScrollsToMostRecentMessage) {
+            self.scrollToBottomAnimated(true)
         }
-        
-        let videoAction = UIAlertAction(title: "Send video", style: .Default) { (action) in
-            /**
-             *  Add fake video
-             */
-            let videoItem = self.buildVideoItem()
-            
-            self.addMedia(videoItem)
-        }
-        
-        let audioAction = UIAlertAction(title: "Send audio", style: .Default) { (action) in
-            /**
-             *  Add fake audio
-             */
-            let audioItem = self.buildAudioItem()
-            
-            self.addMedia(audioItem)
-        }
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
-        
-        sheet.addAction(photoAction)
-        sheet.addAction(locationAction)
-        sheet.addAction(videoAction)
-        sheet.addAction(audioAction)
-        sheet.addAction(cancelAction)
-        
-        self.presentViewController(sheet, animated: true, completion: nil)
     }
+    
+    func presentationControllerForPresentedViewController(presented: UIViewController, presentingViewController presenting: UIViewController, sourceViewController source: UIViewController) -> UIPresentationController? {
+        return HalfSizePresentationController(presentedViewController: presented, presentingViewController: self)
+    }
+    
+    
+//    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?)
+//    {
+//        if segue.identifier == "showSmileyCollection" {
+//            let vc = segue.destinationViewController
+//            vc.view.bounds = CGRectMake(0, 0, 100, 100)
+//            vc.view.setNeedsDisplay()
+//            vc.view.layoutSubviews()
+//            vc.view.setNeedsUpdateConstraints()
+//            
+//            
+//        }
+//    }
+
+//    {
+//        self.inputToolbar.contentView!.textView!.resignFirstResponder()
+//        
+//        let sheet = UIAlertController(title: "Media messages", message: nil, preferredStyle: .ActionSheet)
+//        
+//        let photoAction = UIAlertAction(title: "Send photo", style: .Default) { (action) in
+//            /**
+//             *  Create UIImagePicker to send photo
+//             */
+////            let photoItem = JSQPhotoMediaItem(image: UIImage(named: "goldengate"))
+////            self.addMedia(photoItem)
+//            self.performSegueWithIdentifier("showSmileyCollection", sender: sheet)
+//        }
+//        
+//        let locationAction = UIAlertAction(title: "Send location", style: .Default) { (action) in
+//            /**
+//             *  Add fake location
+//             */
+//            let locationItem = self.buildLocationItem()
+//            
+//            self.addMedia(locationItem)
+//        }
+//        
+//        let videoAction = UIAlertAction(title: "Send video", style: .Default) { (action) in
+//            /**
+//             *  Add fake video
+//             */
+//            let videoItem = self.buildVideoItem()
+//            
+//            self.addMedia(videoItem)
+//        }
+//        
+//        let audioAction = UIAlertAction(title: "Send audio", style: .Default) { (action) in
+//            /**
+//             *  Add fake audio
+//             */
+//            let audioItem = self.buildAudioItem()
+//            
+//            self.addMedia(audioItem)
+//        }
+//        
+//        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+//        
+//        sheet.addAction(photoAction)
+//        sheet.addAction(locationAction)
+//        sheet.addAction(videoAction)
+//        sheet.addAction(audioAction)
+//        sheet.addAction(cancelAction)
+//        
+//        self.presentViewController(sheet, animated: true, completion: nil)
+//    }
     
     func buildVideoItem() -> JSQVideoMediaItem {
         let videoURL = NSURL(fileURLWithPath: "file://")
@@ -327,11 +371,11 @@ class DetailViewController: JSQMessagesViewController {
     //MARK: JSQMessages CollectionView DataSource
     
     override func senderId() -> String {
-        return User.Wazniak.rawValue
+        return User.Swarup.rawValue
     }
     
     override func senderDisplayName() -> String {
-        return getName(User.Wazniak)
+        return getName(User.Swarup)
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -377,9 +421,9 @@ class DetailViewController: JSQMessagesViewController {
          *  Example on showing or removing senderDisplayName based on user settings.
          *  This logic should be consistent with what you return from `heightForCellTopLabelAtIndexPath:`
          */
-        if defaults.boolForKey(Setting.removeSenderDisplayName.rawValue) {
-            return nil
-        }
+//        if defaults.boolForKey(Setting.removeSenderDisplayName.rawValue) {
+//            return nil
+//        }
         
         if message.senderId == self.senderId() {
             return nil
@@ -412,9 +456,9 @@ class DetailViewController: JSQMessagesViewController {
          *  Example on showing or removing senderDisplayName based on user settings.
          *  This logic should be consistent with what you return from `attributedTextForCellTopLabelAtIndexPath:`
          */
-        if defaults.boolForKey(Setting.removeSenderDisplayName.rawValue) {
-            return 0.0
-        }
+//        if defaults.boolForKey(Setting.removeSenderDisplayName.rawValue) {
+//            return 0.0
+//        }
         
         /**
          *  iOS7-style sender name labels

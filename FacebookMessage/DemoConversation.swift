@@ -14,7 +14,7 @@ enum User: String {
     case Squires    = "053496-4509-289"
     case Jobs       = "707-8956784-57"
     case Cook       = "468-768355-23123"
-    case Wazniak    = "309-41802-93823"
+    case Swarup    = "309-41802-93823"
 }
 
 // Helper Function to get usernames for a secific User.
@@ -24,8 +24,8 @@ func getName(user: User) -> String{
         return "Jesse Squires"
     case .Cook:
         return "Tim Cook"
-    case .Wazniak:
-        return "Steve Wazniak"
+    case .Swarup:
+        return "Swarup Pattnaik"
     case .Leonard:
         return "Dan Leonard"
     case .Jobs:
@@ -37,7 +37,7 @@ func getName(user: User) -> String{
 //let DisplayNameLeonard = "Dan Leonard"
 //let DisplayNameCook = "Tim Cook"
 //let DisplayNameJobs = "Steve Jobs"
-//let DisplayNameWoz = "Steve Wazniak"
+//let DisplayNameWoz = "Steve Swarup"
 
 
 
@@ -74,7 +74,7 @@ func getAvatar(id: String) -> JSQMessagesAvatarImage{
         return AvatarSquires
     case .Cook:
         return AvatarCook
-    case .Wazniak:
+    case .Swarup:
         return AvatarWaz
     case .Jobs:
         return AvatarJobs
@@ -92,25 +92,25 @@ var conversation = [JSQMessage]()
 
 let message = JSQMessage(senderId: AvatarIdCook, displayName: getName(User.Cook), text: "What is this Black Majic?")
 let message2 = JSQMessage(senderId: AvatarIDSquires, displayName: getName(User.Squires), text: "It is simple, elegant, and easy to use. There are super sweet default settings, but you can customize like crazy")
-let message3 = JSQMessage(senderId: AvatarIdWoz, displayName: getName(User.Wazniak), text: "It even has data detectors. You can call me tonight. My cell number is 123-456-7890. My website is www.hexedbits.com.")
+let message3 = JSQMessage(senderId: AvatarIdWoz, displayName: getName(User.Swarup), text: "It even has data detectors. You can call me tonight. My cell number is 123-456-7890. My website is www.hexedbits.com.")
 let message4 = JSQMessage(senderId: AvatarIdJobs, displayName: getName(User.Jobs), text: "JSQMessagesViewController is nearly an exact replica of the iOS Messages App. And perhaps, better.")
 let message5 = JSQMessage(senderId: AvatarIDLeonard, displayName: getName(User.Leonard), text: "It is unit-tested, free, open-source, and documented.")
 
 
 let message6 = JSQMessage(senderId: AvatarIDLeonard, displayName: getName(User.Leonard), text: "This is incredible")
-let message7 = JSQMessage(senderId: AvatarIdWoz, displayName: getName(User.Wazniak), text: "I would have to agree")
+let message7 = JSQMessage(senderId: AvatarIdWoz, displayName: getName(User.Swarup), text: "I would have to agree")
 let message8 = JSQMessage(senderId: AvatarIDLeonard, displayName: getName(User.Leonard), text: "It is unit-tested, free, open-source, and documented like a boss.")
-let message9 = JSQMessage(senderId: AvatarIdWoz, displayName: getName(User.Wazniak), text: "You guys need an award for this, I'll talk to my people at Apple. 💯 💯 💯")
+let message9 = JSQMessage(senderId: AvatarIdWoz, displayName: getName(User.Swarup), text: "You guys need an award for this, I'll talk to my people at Apple. 💯 💯 💯")
 
 // photo message
 let photoItem = JSQPhotoMediaItem(image: UIImage(named: "goldengate"))
-let photoMessage = JSQMessage(senderId: AvatarIdWoz, displayName: getName(User.Wazniak), media: photoItem)
+let photoMessage = JSQMessage(senderId: AvatarIdWoz, displayName: getName(User.Swarup), media: photoItem)
 
 // audio mesage
 let sample = NSBundle.mainBundle().pathForResource("jsq_messages_sample", ofType: "m4a")
 let audioData = NSData(contentsOfFile: sample!)
 let audioItem = JSQAudioMediaItem(data: audioData)
-let audioMessage = JSQMessage(senderId: AvatarIdWoz, displayName: getName(User.Wazniak), media: audioItem)
+let audioMessage = JSQMessage(senderId: AvatarIdWoz, displayName: getName(User.Swarup), media: audioItem)
 
 func makeGroupConversation()->[JSQMessage] {
     conversation = [message, message2,message3, message4, message5, photoMessage, audioMessage]
